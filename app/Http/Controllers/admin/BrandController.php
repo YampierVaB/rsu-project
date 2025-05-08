@@ -22,7 +22,11 @@ class BrandController extends Controller
      */
     public function create()
     {
-        return view('admin.brands.create');
+        try {
+            return view('admin.brands.create');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar crear una nueva marca.');
+        }
     }
 
     /**
@@ -30,8 +34,17 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        Brand::create($request->all());
-        return redirect()->route('admin.brands.index');
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string|max:500',
+            ]);
+
+            Brand::create($request->all());
+            return redirect()->route('admin.brands.index')->with('success', 'Marca registrada con éxito.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar registrar la marca.');
+        }
     }
 
     /**
@@ -39,8 +52,12 @@ class BrandController extends Controller
      */
     public function show(string $id)
     {
-        $brand = Brand::find($id);
-        return view('admin.brands.show', compact('brand'));
+        try {
+            $brand = Brand::findOrFail($id);
+            return view('admin.brands.show', compact('brand'));
+        } catch (\Exception $e) {
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar mostrar la marca.');
+        }
     }
 
     /**
@@ -48,8 +65,12 @@ class BrandController extends Controller
      */
     public function edit(string $id)
     {
-        $brand = Brand::find($id);
-        return view('admin.brands.edit', compact('brand'));
+        try {
+            $brand = Brand::findOrFail($id);
+            return view('admin.brands.edit', compact('brand'));
+        } catch (\Exception $e) {
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar editar la marca.');
+        }
     }
 
     /**
@@ -57,9 +78,20 @@ class BrandController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $brand = Brand::find($id);
-        $brand->update($request->all());
-        return redirect()->route('admin.brands.index');
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string|max:500',
+            ]);
+
+            $brand = Brand::findOrFail($id);
+            $brand->update($request->all());
+            return redirect()->route('admin.brands.index')->with('success', 'Marca actualizada con éxito.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar actualizar la marca.');
+        }
+        
+
     }
 
     /**
@@ -67,6 +99,13 @@ class BrandController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $brand = Brand::findOrFail($id);
+            $brand->delete();
+            return redirect()->route('admin.brands.index')->with('success', 'Marca eliminada con éxito.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar eliminar la marca.');
+        }
+
     }
 }
