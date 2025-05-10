@@ -37,11 +37,12 @@ class BrandController extends Controller
     {
         try {
             $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:brands,name',
                 'description' => 'nullable|string|max:500',
             ]);
 
             $logo = "";
+
             if ($request->hasFile('logo')) {
                 $image = $request->file('logo')->store('brands', 'public');
                 $logo = 'storage/' . $image; // Ruta accesible desde el navegador
@@ -93,7 +94,7 @@ class BrandController extends Controller
     {
         try {
             $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:brands,name,' . $id,
                 'description' => 'nullable|string|max:500',
             ]);
             $brand = Brand::findOrFail($id);
@@ -119,7 +120,7 @@ class BrandController extends Controller
             // $brand->update($request->all());
             return redirect()->route('admin.brands.index')->with('success', 'Marca actualizada con éxito.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar actualizar la marca.');
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar actualizar la marca. ' . $e->getMessage());
         }
         
 
@@ -135,7 +136,7 @@ class BrandController extends Controller
             $brand->delete();
             return redirect()->route('admin.brands.index')->with('success', 'Marca eliminada con éxito.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar eliminar la marca.');
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar eliminar la marca.' . $e->getMessage());
         }
 
     }

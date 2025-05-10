@@ -14,8 +14,13 @@ class BrandModelController extends Controller
      */
     public function index()
     {
-        //
-        $models = Brandmodel::all();
+        // $models = Brandmodel::all();
+        $models = Brandmodel::select(
+            'brandmodels.id', 'brandmodels.name as model_name', 'code', 'b.name as brand_name', 'brandmodels.description', 'brandmodels.created_at', 'brandmodels.updated_at'
+            )
+            ->join('brands as b', 'brandmodels.brand_id', '=', 'b.id')
+            ->get();
+
         return view('admin.models.index', compact('models'));
     }
 
@@ -34,19 +39,18 @@ class BrandModelController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'model_name' => 'required',
+            'name' => 'required|unique:brandmodels,name',
+            'code' => 'required',
             'brand_id' => 'required',
             'description' => 'required',
         ]);
 
-        Brandmodel::create([
-            'model_name' => $request->model_name,
-            'code' => 'codigo',
-            'brand_id' => $request->brand_id,
-            'description' => $request->description,
-        ]);
-
-        return redirect()->route('admin.models.index')->with('success', 'Modelo creado exitosamente');
+        try {
+            Brandmodel::create($request->all());
+            return redirect()->route('admin.models.index')->with('success', 'Modelo creado exitosamente');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.models.index')->with('error', 'Error al crear el modelo: ' . $e->getMessage());
+        }
     }
 
     /**

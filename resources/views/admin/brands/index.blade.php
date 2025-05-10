@@ -3,19 +3,7 @@
 @section('title', 'Marcas')
 
 @section('content')
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            <i class="fas fa-check-circle"></i> {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
-    @if (session('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -39,8 +27,8 @@
                 <tbody>
                     @foreach ($brands as $brand)
                         <tr>
-                            <td><img src="{{ $brand->logo == '' ? asset('storage/brands_logos/no_image.png') : asset($brand->logo) }}" 
-                                alt="" width="80px" height="50px"></td>
+                            <td><img src="{{ $brand->logo == '' ? asset('storage/brands_logos/no_image.png') : asset($brand->logo) }}"
+                                    alt="" width="80px" height="50px"></td>
                             <td>{{ $brand->name }}</td>
                             <td>{{ $brand->description }}</td>
                             <td>{{ $brand->created_at->format('d/m/Y') }}</td>
@@ -52,7 +40,9 @@
                                 <button class="btn btn-sm btn-danger" onclick="confirmDelete({{ $brand->id }})">
                                     <i class="fas fa-trash"></i>
                                 </button>
-                                <form id="delete-form-{{ $brand->id }}" action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST" style="display: none;">
+                                <form id="delete-form-{{ $brand->id }}"
+                                    action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST"
+                                    style="display: none;">
                                     @csrf
                                     @method('DELETE')
                                 </form>
@@ -66,14 +56,38 @@
 @endsection
 
 @section('js')
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        </script>
+    @endif
+
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: '¡Error!',
+                text: '{{ session('error') }}',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        </script>
+    @endif
+
+    
     <script>
-        
         $('#TablaMarcas').DataTable({
             language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/es-ES.json'
+                url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/es-ES.json'
             }
         });
-    
+
 
         function confirmDelete(id) {
             Swal.fire({
@@ -92,7 +106,7 @@
             });
         }
 
-// Ocultar automáticamente las alertas después de 5 segundos
+        // Ocultar automáticamente las alertas después de 5 segundos
         setTimeout(() => {
             const alert = document.querySelector('.alert');
             if (alert) {
@@ -101,7 +115,5 @@
                 setTimeout(() => alert.remove(), 500); // Eliminar del DOM después de la animación
             }
         }, 3000); // 3000 ms = 3 segundos
-
-
     </script>
 @endsection
