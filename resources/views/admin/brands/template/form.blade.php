@@ -7,3 +7,8 @@
     {!! Form::label('description', 'Descripción de la Marca') !!}
     {!! Form::textarea('description', null, ['class' => 'form-control', 'placeholder' => 'Ingrese la descripción de la marca', 'rows' => 4]) !!}
 </div>
+
+<div class="form-group">
+    {!! Form::label('logo', 'Logo de la Marca') !!}
+    {!! Form::file('logo', ['class' => 'form-control-file', 'accept' => 'image/*']) !!}
+</div>

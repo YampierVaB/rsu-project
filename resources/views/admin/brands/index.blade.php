@@ -25,7 +25,7 @@
             </a>
         </div>
         <div class="card-body">
-            <table class="table table-bordered text-center" id="TablaMarcas">
+            <table class="table table-sm table-bordered text-center" id="TablaMarcas">
                 <thead class="thead-dark">
                     <tr>
                         <th>Logo</th>
@@ -39,13 +39,8 @@
                 <tbody>
                     @foreach ($brands as $brand)
                         <tr>
-                            <td>
-                                @if ($brand->logo)
-                                    <img src="{{ asset('storage/' . $brand->logo) }}" alt="Logo" class="img-thumbnail" style="width: 50px; height: 50px;">
-                                @else
-                                    <i class="fas fa-image text-muted"></i>
-                                @endif
-                            </td>
+                            <td><img src="{{ $brand->logo == '' ? asset('storage/brands_logos/no_image.png') : asset($brand->logo) }}" 
+                                alt="" width="80px" height="50px"></td>
                             <td>{{ $brand->name }}</td>
                             <td>{{ $brand->description }}</td>
                             <td>{{ $brand->created_at->format('d/m/Y') }}</td>
@@ -73,7 +68,11 @@
 @section('js')
     <script>
         
-        $('#TablaMarcas').DataTable();
+        $('#TablaMarcas').DataTable({
+            language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/es-ES.json'
+            }
+        });
     
 
         function confirmDelete(id) {

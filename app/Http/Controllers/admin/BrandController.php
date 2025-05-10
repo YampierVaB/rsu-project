@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BrandController extends Controller
 {
@@ -40,10 +41,22 @@ class BrandController extends Controller
                 'description' => 'nullable|string|max:500',
             ]);
 
-            Brand::create($request->all());
+            $logo = "";
+            if ($request->hasFile('logo')) {
+                $image = $request->file('logo')->store('brands', 'public');
+                $logo = 'storage/' . $image; // Ruta accesible desde el navegador
+            }
+            // Brand::create($request->all());
+            
+        Brand::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'logo' => $logo,
+        ]);
+
             return redirect()->route('admin.brands.index')->with('success', 'Marca registrada con éxito.');
         } catch (\Exception $e) {
-            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar registrar la marca.');
+            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar registrar la marca. ' . $e->getMessage());
         }
     }
 
@@ -83,9 +96,27 @@ class BrandController extends Controller
                 'name' => 'required|string|max:255',
                 'description' => 'nullable|string|max:500',
             ]);
-
             $brand = Brand::findOrFail($id);
-            $brand->update($request->all());
+
+            if ($request->hasFile('logo')) {
+                // Eliminar la imagen anterior si existe
+                if ($brand->logo && Storage::exists(str_replace('storage/', 'public/', $brand->logo))) {
+                    Storage::delete(str_replace('storage/', 'public/', $brand->logo));
+                }
+
+                // Guardar la nueva imagen
+                $image = $request->file('logo')->store('brands', 'public');
+                $brand->logo = 'storage/' . $image; // Ruta accesible desde el navegador
+            }
+
+            // Actualizar los datos de la marca
+            $brand->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'logo' => $brand->logo,
+            ]);
+
+            // $brand->update($request->all());
             return redirect()->route('admin.brands.index')->with('success', 'Marca actualizada con éxito.');
         } catch (\Exception $e) {
             return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar actualizar la marca.');

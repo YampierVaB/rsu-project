@@ -9,7 +9,7 @@
         <h3>Nueva Marca</h3>
     </div>
     <div class="card-body">
-        {!! Form::open(['route' => 'admin.brands.store', 'method' => 'POST']) !!}
+        {!! Form::open(['route' => 'admin.brands.store', 'files' => true, 'method' => 'POST']) !!}
         @include('admin.brands.template.form')
         <button type="submit" class="btn btn-primary">Registrar</button>
         
