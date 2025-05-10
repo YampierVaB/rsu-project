@@ -306,6 +306,10 @@ return [
             'topnav_right' => true,
         ],
         [
+            'type' => 'darkmode-widget',
+            'topnav_right' => true,
+        ],
+        [
             'type' => 'fullscreen-widget',
             'topnav_right' => true,
         ],
@@ -326,11 +330,11 @@ return [
             'route' => 'admin.brands.index',
             'icon' => 'fas fa-copyright',
         ],
-        // [
-        //     'text' => 'Modelos',
-        //     'route' => 'admid.models.index',
-        //     'icon' => 'fas fa-car',
-        // ],
+        [
+            'text' => 'Modelos',
+            'route' => 'admin.models.index',
+            'icon' => 'fas fa-car',
+        ],
         [
             'text' => 'multilevel',
             'icon' => 'fas fa-fw fa-share',

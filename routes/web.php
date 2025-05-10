@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\admin\AdminController;
-use App\Http\Controllers\admin\BrandController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +29,3 @@ Route::middleware([
 });
 
 
-Route::resource('admin', AdminController::class)->names('admin');
-// Registrar todas las rutas del recurso BrandController
-Route::resource('brands', BrandController::class)->names('admin.brands');
