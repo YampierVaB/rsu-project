@@ -6,16 +6,31 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Yajra\DataTables\Facades\DataTables;
 
 class BrandController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $brands = Brand::all();
-        return view('admin.brands.index', compact('brands'));
+
+        if ($request->ajax()) {
+            return DataTables::of($brands)
+            ->addColumn('logo', function ($brand) {
+                return '<img src="' . ($brand->logo == '' ? asset('storage/brands/no_image.png') : asset($brand->logo)) . '" width="80px" height="50px">';
+            })
+            ->addColumn('actions', function ($brand) {
+                return '<button class="btn btn-sm btn-warning btnEditar" id="' . $brand->id . '"><i class="fas fa-edit"></i></button>'
+                 . '<button class="btn btn-sm btn-danger btnEliminar" id="' . $brand->id . '"><i class="fas fa-trash"></i></button>';
+            })
+            ->rawColumns(['logo', 'actions'])
+            ->make(true);
+        } else {
+            return view('admin.brands.index', compact('brands'));
+        }
     }
 
     /**
@@ -55,9 +70,16 @@ class BrandController extends Controller
             'logo' => $logo,
         ]);
 
-            return redirect()->route('admin.brands.index')->with('success', 'Marca registrada con éxito.');
+            // return redirect()->route('admin.brands.index')->with('success', 'Marca registrada con éxito.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Marca registrada con éxito.',
+            ], 200);
         } catch (\Exception $e) {
-            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar registrar la marca. ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al intentar registrar la marca. ' . $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -118,9 +140,17 @@ class BrandController extends Controller
             ]);
 
             // $brand->update($request->all());
-            return redirect()->route('admin.brands.index')->with('success', 'Marca actualizada con éxito.');
+            // return redirect()->route('admin.brands.index')->with('success', 'Marca actualizada con éxito.');
+            return response()->json([
+                'success' => true,
+                'message' => 'Marca actualizada con éxito.',
+            ], 200);
+
         } catch (\Exception $e) {
-            return redirect()->route('admin.brands.index')->with('error', 'Ocurrió un error al intentar actualizar la marca. ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Ocurrió un error al intentar actualizar la marca. ' . $e->getMessage(),
+            ], 500);
         }
         
 
