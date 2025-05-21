@@ -177,6 +177,33 @@
                     $('#modalCenterTitle').html('Nueva Marca');
                     $('#modalCenter .modal-body').html(response);
                     $('#modalCenter').modal('show');
+
+                    $('#modalCenter form').on('submit', function(e){
+                        e.preventDefault();
+                        var formData = new FormData(this);
+
+                        $.ajax({
+                            url: '{{ route('admin.brands.store') }}',
+                            type: 'POST',
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                $('#modalCenter').modal('hide');
+                                console.log('response', response);
+                                // Actualizar la tabla
+                                updateTable();
+
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: '¡Éxito!',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
+                            }
+                        });
+                    })
                 }
             });
         });
