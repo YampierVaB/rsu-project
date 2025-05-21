@@ -201,6 +201,15 @@
                                     showConfirmButton: false,
                                     timer: 2000
                                 });
+                            }, error: function(response) {
+                                console.log('response', response);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: '¡Error!',
+                                    text: response.responseJSON.message,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                });
                             }
                         });
                     })

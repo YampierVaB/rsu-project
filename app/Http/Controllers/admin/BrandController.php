@@ -62,13 +62,14 @@ class BrandController extends Controller
                 $image = $request->file('logo')->store('brands', 'public');
                 $logo = 'storage/' . $image; // Ruta accesible desde el navegador
             }
-            // Brand::create($request->all());
+
+            // return $logo;
             
-        Brand::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'logo' => $logo,
-        ]);
+            Brand::create([
+                'name' => $request->name,
+                'description' => $request->description,
+                'logo' => $logo,
+            ]);
 
             // return redirect()->route('admin.brands.index')->with('success', 'Marca registrada con éxito.');
             return response()->json([
