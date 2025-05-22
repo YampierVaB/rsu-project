@@ -19,8 +19,7 @@
         </div>
 
         <div class="form-group">
-            {!! Form::label('logo', 'Logo de la Marca') !!}
-            {!! Form::file('logo', ['class' => 'form-control-file', 'accept' => 'image/*', 'id' => 'imgInput']) !!}
+            {!! Form::file('logo', ['class' => 'form-control-file d-none', 'accept' => 'image/*', 'id' => 'imgInput']) !!}
         </div>
     </div>
     <div class="col-4">
@@ -36,5 +35,13 @@
 <script>
     document.getElementById('imageButton').addEventListener('click', function() {
         document.getElementById('imgInput').click();
+    });
+
+    document.getElementById('imgInput').addEventListener('change', function() {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('imageButton').src = e.target.result;
+        };
+        reader.readAsDataURL(this.files[0]);
     });
 </script>

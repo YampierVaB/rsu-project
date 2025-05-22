@@ -23,8 +23,8 @@
                         <th>Descripción</th>
                         <th>Creación</th>
                         <th>Actualización</th>
-                        <th></th>
-                        <th></th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -78,9 +78,9 @@
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable({
-                /*"language": {
-                    "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
-                }*/
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/es-ES.json'
+                },
                 "ajax": "{{ route('admin.brands.index') }}",
                 "columns": [{
                         "data": "logo",

@@ -26,7 +26,7 @@ class BrandController extends Controller
                 return '<button class="btn btn-sm btn-warning btnEditar" id="' . $brand->id . '"><i class="fas fa-edit"></i></button>';
             })
             ->addColumn('delete', function ($brand) {
-                return '<button class="btn btn-sm btn-danger btnEliminar" id="' . $brand->id . '"><i class="fas fa-trash"></i></button>';
+                return '<form action="' . route('admin.brands.destroy', $brand->id) . '" method="POST" class="frmDelete"><button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button></form>';
             })
             ->rawColumns(['logo', 'edit', 'delete'])
             ->make(true);
