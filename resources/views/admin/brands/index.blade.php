@@ -2,265 +2,282 @@
 
 @section('title', 'Marcas')
 
+<!--@section('content_header')
+@stop-->
+
 @section('content')
-
-
+    <div class="p-2"></div>
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="card-title">Lista de Marcas</h3>
-            <button id="btnNuevo" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Nuevo
+        <div class="card-header">
+            <button type="button" class="btn btn-primary float-right" id="btnNuevo"><i class="fas fa-folder-plus"></i>
+                Nuevo</button>
             </button>
+            <h3>Marcas</h3>
         </div>
         <div class="card-body">
-            <table class="table table-sm table-bordered text-center" id="TablaMarcas">
-                <thead class="thead-dark">
+            <table class="display" id="datatable">
+                <thead>
                     <tr>
                         <th>Logo</th>
                         <th>Nombre</th>
                         <th>Descripción</th>
                         <th>Creación</th>
                         <th>Actualización</th>
-                        <th>Acciones</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($brands as $brand)
                         <tr>
-                            <td><img src="{{ $brand->logo == '' ? asset('storage/brands/no_image.png') : asset($brand->logo) }}"
+                            <td><img src="{{ $brand->logo == '' ? asset('storage/brand_logo/no_image.png') : asset($brand->logo) }}"
                                     alt="" width="80px" height="50px"></td>
                             <td>{{ $brand->name }}</td>
                             <td>{{ $brand->description }}</td>
-                            <td>{{ $brand->created_at->format('d/m/Y') }}</td>
-                            <td>{{ $brand->updated_at->format('d/m/Y') }}</td>
+                            <td>{{ $brand->created_at }}</td>
+                            <td>{{ $brand->updated_at }}</td>
+                            <td><button class="btn btn-success btn-sm btnEditar" id="{{ $brand->id }}">
+                                    <i class="fas fa-pen""></i></button>
+                            </td>
                             <td>
-                                <button class="btn btn-sm btn-warning btnEditar" id="{{ $brand->id }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" onclick="confirmDelete({{ $brand->id }})">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <form id="delete-form-{{ $brand->id }}"
-                                    action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST"
-                                    style="display: none;">
+                                <form action="{{ route('admin.brands.destroy', $brand->id) }}" method="POST"
+                                    class="frmDelete">
                                     @csrf
-                                    @method('DELETE')
+                                    @method('delete')
+                                    <button type="submit" class="btn btn-danger btn-sm"><i
+                                            class="fas fa-trash"></i></button>
                                 </form>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+        </div>
+    </div>
 
-            <div class="modal fade" id="modalCenter" tabindex="-1" role="dialog" aria-labelledby="modalCenterTitle"
-                aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="modalCenterTitle">Modal</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            {{-- @include('admin.brands.template.form') --}}
-                            ...
-                        </div>
-                    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalLongTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ...
                 </div>
             </div>
         </div>
     </div>
-@endsection
+@stop
 
 @section('js')
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: '¡Éxito!',
-                text: '{{ session('success') }}',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        </script>
-    @endif
-
-    @if (session('error'))
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: '¡Error!',
-                text: '{{ session('error') }}',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        </script>
-    @endif
-
-    
     <script>
-        $('#TablaMarcas').DataTable({
-            language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.5/i18n/es-ES.json'
-            }, 
-            // ajax: {
-            //     url: '{{ route('admin.brands.index') }}',
-            //     type: 'GET',
-            //     dataSrc: ''
-            // },
-            columns: [
-                {
-                    data: 'logo'
-                },
-                {
-                    data: 'name'
-                },
-                {
-                    data: 'description'
-                },
-                {
-                    data: 'created_at',
-                    // render: function(data) {
-                    //     return moment(data).format('DD/MM/YYYY');
-                    // }
-                },
-                {
-                    data: 'updated_at',
-                    // render: function(data) {
-                    //     return moment(data).format('DD/MM/YYYY');
-                    // }
-                },
-                {
-                    data: 'actions',
-                    orderable: false,
-                    searchable: false
-                }
-             ]
+        $(document).ready(function() {
+            $('#datatable').DataTable({
+                /*"language": {
+                    "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
+                }*/
+                "ajax": "{{ route('admin.brands.index') }}",
+                "columns": [{
+                        "data": "logo",
+                        "width": "4%",
+                        "orderable": false,
+                        "searchable": false
+                    },
+                    {
+                        "data": "name"
+                    },
+                    {
+                        "data": "description"
+                    },
+                    {
+                        "data": "created_at"
+                    },
+                    {
+                        "data": "updated_at"
+                    },
+                    {
+                        "data": "edit",
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "4%",
 
-        });
+                    },
+                    {
+                        "data": "delete",
+                        "orderable": false,
+                        "searchable": false,
+                        "width": "4%",
 
-
-        function confirmDelete(id) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: "¡No podrás revertir esto!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById(`delete-form-${id}`).submit();
-                }
+                    },
+                ]
             });
-        }
-
-        // Ocultar automáticamente las alertas después de 5 segundos
-        setTimeout(() => {
-            const alert = document.querySelector('.alert');
-            if (alert) {
-                alert.classList.remove('show');
-                alert.classList.add('fade');
-                setTimeout(() => alert.remove(), 500); // Eliminar del DOM después de la animación
-            }
-        }, 3000); // 3000 ms = 3 segundos
-
+        })
 
         $('#btnNuevo').click(function() {
             $.ajax({
-                url: '{{ route('admin.brands.create') }}',
-                type: 'GET',
+                url: "{{ route('admin.brands.create') }}",
+                type: "GET",
                 success: function(response) {
-                    $('#modalCenterTitle').html('Nueva Marca');
-                    $('#modalCenter .modal-body').html(response);
-                    $('#modalCenter').modal('show');
+                    $('.modal-title').html("Nueva marca");
+                    $('#ModalCenter .modal-body').html(response);
+                    $('#ModalCenter').modal('show');
 
-                    $('#modalCenter form').on('submit', function(e){
+                    $('#ModalCenter form').on('submit', function(e) {
                         e.preventDefault();
-                        var formData = new FormData(this);
-
+                        var form = $(this);
+                        var formdata = new FormData(this);
                         $.ajax({
-                            url: '{{ route('admin.brands.store') }}',
-                            type: 'POST',
-                            data: formData,
+                            url: form.attr('action'),
+                            type: form.attr('method'),
+                            data: formdata,
                             processData: false,
                             contentType: false,
                             success: function(response) {
-                                $('#modalCenter').modal('hide');
-                                console.log('response', response);
-                                // Actualizar la tabla
-                                updateTable();
-
+                                $('#ModalCenter').modal('hide');
+                                refreshTable();
                                 Swal.fire({
-                                    icon: 'success',
-                                    title: '¡Éxito!',
+                                    title: "Proceso exitoso",
+                                    icon: "success",
                                     text: response.message,
-                                    showConfirmButton: false,
-                                    timer: 2000
+                                    draggable: true
                                 });
-                            }, error: function(response) {
-                                console.log('response', response);
+                            },
+                            error: function(xhr) {
+                                var response = xhr.responseJSON;
                                 Swal.fire({
-                                    icon: 'error',
-                                    title: '¡Error!',
-                                    text: response.responseJSON.message,
-                                    showConfirmButton: false,
-                                    timer: 2000
+                                    title: "Error",
+                                    icon: "error",
+                                    text: response.message,
+                                    draggable: true
                                 });
                             }
-                        });
+                        })
                     })
                 }
-            });
-        });
+            })
+        })
 
-        $(document).on('click', '.btnEditar', function(){
-            var id = $(this).attr('id');
+        $(document).on('click', '.btnEditar', function() {
+            var id = $(this).attr("id");
             $.ajax({
-                url: '{{ route('admin.brands.edit', 'id') }}'.replace('id', id),
-                type: 'GET',
+                url: "{{ route('admin.brands.edit', 'id') }}".replace('id', id),
+                type: "GET",
                 success: function(response) {
-                    $('#modalCenterTitle').html('Editar Marca');
-                    $('#modalCenter .modal-body').html(response);
-                    $('#modalCenter').modal('show');
+                    $('.modal-title').html("Editar marca");
+                    $('#ModalCenter .modal-body').html(response);
+                    $('#ModalCenter').modal('show');
 
-                    $('#modalCenter form').on('submit', function(e){
+                    $('#ModalCenter form').on('submit', function(e) {
                         e.preventDefault();
-                        var formData = new FormData(this);
-
+                        var form = $(this);
+                        var formdata = new FormData(this);
                         $.ajax({
-                            url: '{{ route('admin.brands.update', 'id') }}'.replace('id', id),
-                            type: 'POST',
-                            data: formData,
+                            url: form.attr('action'),
+                            type: form.attr('method'),
+                            data: formdata,
                             processData: false,
                             contentType: false,
                             success: function(response) {
-                                $('#modalCenter').modal('hide');
-                                console.log('response', response);
-                                // Actualizar la tabla
-                                updateTable();
-
+                                $('#ModalCenter').modal('hide');
+                                refreshTable();
                                 Swal.fire({
-                                    icon: 'success',
-                                    title: '¡Éxito!',
+                                    title: "Proceso exitoso",
+                                    icon: "success",
                                     text: response.message,
-                                    showConfirmButton: false,
-                                    timer: 2000
+                                    draggable: true
+                                });
+                            },
+                            error: function(xhr) {
+                                var response = xhr.responseJSON;
+                                Swal.fire({
+                                    title: "Error",
+                                    icon: "error",
+                                    text: response.message,
+                                    draggable: true
                                 });
                             }
-                        });
+                        })
                     })
+                }
+            })
+        })
+
+        $(document).on('submit', '.frmDelete', function(e) {
+            e.preventDefault();
+            var form = $(this);
+            Swal.fire({
+                title: "Está seguro de eliminar?",
+                text: "Este proceso no es reversible!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Si, eliminar!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    //this.submit();
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: form.attr('method'),
+                        data: form.serialize(),
+                        success: function(response) {
+                            refreshTable();
+                            Swal.fire({
+                                title: "Proceso exitoso",
+                                icon: "success",
+                                text: response.message,
+                                draggable: true
+                            });
+                        },
+                        error: function(xhr) {
+                            var response = xhr.responseJSON;
+                            Swal.fire({
+                                title: "Error",
+                                icon: "error",
+                                text: response.message,
+                                draggable: true
+                            });
+                        }
+                    });
                 }
             });
         })
 
-        function updateTable() {
-            var table = $('#TablaMarcas').DataTable();
+        function refreshTable() {
+            var table = $('#datatable').DataTable();
             table.ajax.reload(null, false);
         }
-        
     </script>
+
+
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                title: "Proceso exitoso",
+                icon: "success",
+                text: "{{ session('success') }}",
+                draggable: true
+            });
+        </script>
+    @endif
+    @if (session('error'))
+        <script>
+            Swal.fire({
+                title: "Error",
+                icon: "error",
+                text: "{{ session('error') }}",
+                draggable: true
+            });
+        </script>
+    @endif
 @endsection
+
+@section('css')
+    {{-- Add here extra stylesheets --}}
+    {{-- <link rel="stylesheet" href="/css/admin_custom.css"> --}}
+@stop

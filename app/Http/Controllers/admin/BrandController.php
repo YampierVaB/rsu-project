@@ -22,11 +22,13 @@ class BrandController extends Controller
             ->addColumn('logo', function ($brand) {
                 return '<img src="' . ($brand->logo == '' ? asset('storage/brands/no_image.png') : asset($brand->logo)) . '" width="80px" height="50px">';
             })
-            ->addColumn('actions', function ($brand) {
-                return '<button class="btn btn-sm btn-warning btnEditar" id="' . $brand->id . '"><i class="fas fa-edit"></i></button>'
-                 . '<button class="btn btn-sm btn-danger btnEliminar" id="' . $brand->id . '"><i class="fas fa-trash"></i></button>';
+            ->addColumn('edit', function ($brand) {
+                return '<button class="btn btn-sm btn-warning btnEditar" id="' . $brand->id . '"><i class="fas fa-edit"></i></button>';
             })
-            ->rawColumns(['logo', 'actions'])
+            ->addColumn('delete', function ($brand) {
+                return '<button class="btn btn-sm btn-danger btnEliminar" id="' . $brand->id . '"><i class="fas fa-trash"></i></button>';
+            })
+            ->rawColumns(['logo', 'edit', 'delete'])
             ->make(true);
         } else {
             return view('admin.brands.index', compact('brands'));
